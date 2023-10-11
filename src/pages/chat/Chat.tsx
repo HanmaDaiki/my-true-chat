@@ -1,3 +1,9 @@
+import { LayoutChat } from '@widgets/LayoutChat';
+
 export const Chat = () => {
-  return <div>Тут будет CHAT с OpenAI</div>;
+  return (
+    <div>
+      <LayoutChat />
+    </div>
+  );
 };
