@@ -9,7 +9,7 @@ export const RenderMessages: FC = () => {
   return (
     <div className='flex flex-col gap-5 overflow-y-auto w-[95vw] sm:w-[55vw] h-[75vh]'>
       {messages.map((message, index) => {
-        return <Message owner={message.owner} text={message.text} key={index} />;
+        return <Message owner={message.name} text={message.text} key={index} />;
       })}
     </div>
   );

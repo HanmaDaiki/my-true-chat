@@ -1,9 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { useEffect } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { useAppSelector, useAppDispatch } from '@shared/model';
+import { useAppSelector } from '@shared/model';
 import { selectCurrentTheme } from '@entities/theme';
-import { login } from '@entities/session';
 import { LayoutHeader } from '@widgets/LayoutHeader';
 import { withProviders } from '@app/provider';
 import { Routing } from '@pages/index';
@@ -13,16 +12,6 @@ import './styles/index.css';
 
 const App = () => {
   const currentTheme = useAppSelector(selectCurrentTheme);
-
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    const session = JSON.parse(localStorage.getItem('session') || '{}');
-
-    if (session.sessionId && session.username) {
-      dispatch(login({ ...session, isAuthenticated: true }));
-    }
-  }, []);
 
   return (
     <div

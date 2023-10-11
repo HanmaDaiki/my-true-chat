@@ -1,5 +1,6 @@
 export interface Message {
-  owner: 'user' | 'bot';
+  name: string;
+  role: 'user' | 'assistant' | 'system';
   text: string;
 }
 

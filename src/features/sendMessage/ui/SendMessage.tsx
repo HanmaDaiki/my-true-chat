@@ -1,29 +1,62 @@
-import { FC, useRef } from 'react';
-import { useAppDispatch } from '@shared/model';
-import { addMessage, updateMessage } from '@entities/chat';
+import { FC, useLayoutEffect, useRef } from 'react';
+import { useAppDispatch, useAppSelector } from '@shared/model';
+import { Message, addMessage, selectMessages, updateMessage } from '@entities/chat';
 import { openai } from '../api/openai';
+import { selectSession } from '@/src/entities/session';
 
 export const SendMessage: FC = () => {
+  const session = useAppSelector(selectSession);
+  const previousMessages = useAppSelector(selectMessages);
+
   const dispatch = useAppDispatch();
 
   const messageRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    dispatch(addMessage({ owner: 'user', text: messageRef.current?.value ?? '' }));
+
+    const message: Message = {
+      role: 'user',
+      text: messageRef.current?.value ?? '',
+      name: session.username,
+    };
+
+    dispatch(addMessage(message));
+
+    const messages = previousMessages.map((message) => {
+      return { role: message.role, content: message.text };
+    });
+
+    messages.push({ role: 'user', content: messageRef.current?.value ?? '' });
 
     const stream = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: messageRef.current?.value ?? '' }],
+      messages,
       stream: true,
     });
 
-    dispatch(addMessage({ owner: 'bot', text: '' }));
+    const answerAi: Message = {
+      role: 'assistant',
+      text: '',
+      name: 'AI',
+    };
+
+    dispatch(addMessage(answerAi));
 
     for await (const message of stream) {
-      dispatch(updateMessage({ owner: 'bot', text: message.choices[0].delta.content }));
+      dispatch(updateMessage({ ...answerAi, text: message.choices[0].delta.content || '' }));
     }
   };
+
+  useLayoutEffect(() => {
+    dispatch(
+      addMessage({
+        role: 'system',
+        text: `Hello, ${session.username}! I'm your assistant.`,
+        name: 'AI',
+      })
+    );
+  }, []);
 
   return (
     <form className='flex flex-col gap-2 overflow-y-auto w-[95vw] sm:w-[55vw]' onSubmit={handleSubmit}>

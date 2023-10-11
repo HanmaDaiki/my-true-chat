@@ -1,4 +1,4 @@
-import { FC, useRef } from 'react';
+import { FC, useRef, useEffect } from 'react';
 import { useAppDispatch } from '@shared/model';
 import { getRanadomNumber } from '@shared/lib';
 import { login } from '@entities/session';
@@ -7,6 +7,14 @@ export const Authorization: FC = () => {
   const usernameRf = useRef<HTMLInputElement>(null);
 
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const session = JSON.parse(localStorage.getItem('session') || '{}');
+
+    if (session.sessionId && session.username) {
+      dispatch(login({ ...session, isAuthenticated: true }));
+    }
+  }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
