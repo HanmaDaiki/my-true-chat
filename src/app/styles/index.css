@@ -4,6 +4,7 @@
 
 #root {
   @apply h-screen w-screen;
+  @apply bg-gray-200;
 }
 
 .dark {
