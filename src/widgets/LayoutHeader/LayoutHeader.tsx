@@ -1,8 +1,9 @@
 import { FC, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@shared/model';
 import { changeTheme } from '@entities/theme';
-import { logout, selectSession } from '@/src/entities/session';
-import { ChangeTheme } from '@/src/features/changeTheme';
+import { logout, selectSession } from '@entities/session';
+import { ChangeTheme } from '@features/changeTheme';
+import { clearChat } from '@entities/chat';
 
 export const LayoutHeader: FC = () => {
   const session = useAppSelector(selectSession);
@@ -11,7 +12,9 @@ export const LayoutHeader: FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('session');
+    localStorage.removeItem('messages');
     dispatch(logout());
+    dispatch(clearChat());
   };
 
   useEffect(() => {

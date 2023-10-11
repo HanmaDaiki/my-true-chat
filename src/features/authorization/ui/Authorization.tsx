@@ -1,10 +1,13 @@
 import { FC, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@shared/model';
 import { getRanadomNumber } from '@shared/lib';
 import { login } from '@entities/session';
 
 export const Authorization: FC = () => {
   const usernameRf = useRef<HTMLInputElement>(null);
+
+  const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
 
@@ -26,6 +29,7 @@ export const Authorization: FC = () => {
       dispatch(login({ username, sessionId, isAuthenticated: true }));
       localStorage.setItem('session', JSON.stringify({ sessionId, username }));
       usernameRf.current!.value = '';
+      navigate('/');
     }
   };
 

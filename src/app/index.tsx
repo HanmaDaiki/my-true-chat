@@ -7,7 +7,6 @@ import { LayoutHeader } from '@widgets/LayoutHeader';
 import { withProviders } from '@app/provider';
 import { Routing } from '@pages/index';
 
-import './styles/normalize.css';
 import './styles/index.css';
 
 const App = () => {

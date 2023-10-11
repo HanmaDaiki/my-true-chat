@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import Markdown from 'react-markdown';
 
 interface MessageProps {
   key: React.Key;
@@ -10,13 +11,13 @@ interface MessageProps {
 export const Message: FC<MessageProps> = ({ text, owner, key, role }) => {
   return (
     <div
-      className={`min-h-[50px] p-5 rounded ${
+      className={`p-5 rounded ${
         role === 'user' ? 'bg-blue-300 dark:bg-blue-700' : 'bg-gray-300 dark:bg-gray-600'
       }  flex flex-col gap-1 relative`}
       key={key}
     >
       <div className='absolute top-2 right-4 text-xs'>{owner}</div>
-      {text}
+      <Markdown>{text}</Markdown>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { LayoutChat } from '@widgets/LayoutChat';
+import { LayoutChat } from "@widgets/LayoutChat";
 
 export const Chat = () => {
   return (

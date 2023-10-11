@@ -1,6 +1,6 @@
-import { FC, useLayoutEffect, useRef } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@shared/model';
-import { Message, addMessage, selectMessages, updateMessage } from '@entities/chat';
+import { Message, addMessage, clearChat, selectMessages, updateMessage } from '@entities/chat';
 import { openai } from '../api/openai';
 import { selectSession } from '@/src/entities/session';
 
@@ -27,7 +27,10 @@ export const SendMessage: FC = () => {
       return { role: message.role, content: message.text };
     });
 
-    messages.push({ role: 'user', content: messageRef.current?.value ?? '' });
+    messages.push({
+      role: 'user',
+      content: 'Это не мой запрос - разметь свой ответ с помощью markdown. Мой запрос - ' + messageRef.current?.value,
+    });
 
     messageRef.current!.value = '';
 
@@ -50,18 +53,12 @@ export const SendMessage: FC = () => {
     }
   };
 
-  useLayoutEffect(() => {
-    dispatch(
-      addMessage({
-        role: 'system',
-        text: `Hello, ${session.username}! I'm your assistant.`,
-        name: 'AI',
-      })
-    );
-  }, []);
+  useEffect(() => {
+    localStorage.setItem('messages', JSON.stringify(previousMessages));
+  }, [previousMessages]);
 
   return (
-    <form className='flex flex-col gap-2 overflow-y-auto w-[95vw] sm:w-[55vw]' onSubmit={handleSubmit}>
+    <form className='flex flex-col gap-2 w-[95vw] sm:w-[55vw] h-[5vh]' onSubmit={handleSubmit}>
       <input
         ref={messageRef}
         type='text'
@@ -70,12 +67,24 @@ export const SendMessage: FC = () => {
         placeholder='Your message'
         required
       />
-      <button
-        type='submit'
-        className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
-      >
-        Submit
-      </button>
+      <div className='flex gap-2'>
+        <button
+          type='submit'
+          className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
+        >
+          Submit
+        </button>
+        <button
+          onClick={() => {
+            dispatch(clearChat());
+            localStorage.removeItem('messages');
+          }}
+          type='button'
+          className='text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800'
+        >
+          Clear Chat
+        </button>
+      </div>
     </form>
   );
 };
